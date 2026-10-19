@@ -453,36 +453,29 @@ function renderHomeBestSellers() {
     attachCartEvents();
 }
 
-function renderProducts(products) {
-    if (!grid) return;
-    grid.innerHTML = "";
-    if (!products.length) {
-        grid.innerHTML = `
-          <div class="col-span-full text-center py-16 text-soft">
-            No items found.
-          </div>
-        `;
-        return;
-    }
-    products.forEach(product => {
-        const discountBadge = product.hasDiscount
-            ? `<div class="discount-badge">${Math.round((1 - product.price / product.compareAtPrice) * 100)}% OFF</div>`
-            : "";
-        grid.innerHTML += `
-        <div class="product-card reveal">
+function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+}
+
+function productCardMarkup(product, bodyPadding = "p-5") {
+    const discountBadge = product.hasDiscount
+        ? `<div class="discount-badge">${Math.round((1 - product.price / product.compareAtPrice) * 100)}% OFF</div>`
+        : "";
+    return `
+        <div class="product-card">
             <div class="product-card-image-wrap">
                 <a href="${getProductPageUrl(product)}">
                     <img
                         src="${product.image}"
-                        alt="${product.title}"
+                        alt="${escapeHtml(product.title)}"
                         class="product-image">
                 </a>
               ${discountBadge}
             </div>
-            <div class="product-card-body p-5">
+            <div class="product-card-body ${bodyPadding}">
                 <h3 class="product-title">
                     <a href="${getProductPageUrl(product)}">
-                        ${product.title}
+                        ${escapeHtml(product.title)}
                     </a>
                 </h3>
                 <div class="product-price-row">
@@ -502,11 +495,73 @@ function renderProducts(products) {
                 </div>
             </div>
         </div>
-        `;
-    });
-    attachCartEvents();
+    `;
 }
 
+const GRID_CLASSES = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6";
+
+function shopSectionsMarkup(products) {
+    const isBestSellers = c => c.handle === "best-sellers" || /best\s*-?\s*sellers?/i.test(c.title);
+    const collections = COLLECTIONS
+        .filter(c => c.handle !== "all")
+        .sort((a, b) => Number(isBestSellers(b)) - Number(isBestSellers(a)));
+    const placed = new Set();
+    const sections = [];
+    collections.forEach(collection => {
+        const items = products.filter(p => p.categories?.includes(collection.handle));
+        if (!items.length) return;
+        items.forEach(p => placed.add(p.id));
+        sections.push({ title: collection.title, href: `shop.html?category=${encodeURIComponent(collection.handle)}`, items });
+    });
+    const rest = products.filter(p => !placed.has(p.id));
+    if (rest.length) sections.push({ title: sections.length ? "More items" : "All items", href: "", items: rest });
+    return sections.map(section => `
+        <section class="shop-section">
+            <div class="shop-section-head">
+                <h2 class="shop-section-title">${escapeHtml(section.title)}</h2>
+                ${section.href ? `<a href="${section.href}" class="shop-section-link">View all <i class="fas fa-arrow-right"></i></a>` : ""}
+            </div>
+            <div class="shop-row">
+                <button type="button" class="shop-row-arrow shop-row-prev" data-dir="-1" aria-label="Scroll left"><i class="fas fa-chevron-left"></i></button>
+                <div class="shop-row-track">
+                    ${section.items.map(product => `<div class="shop-row-item">${productCardMarkup(product, "p-4")}</div>`).join("")}
+                </div>
+                <button type="button" class="shop-row-arrow shop-row-next" data-dir="1" aria-label="Scroll right"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </section>
+    `).join("");
+}
+
+function renderProducts(products) {
+    if (!grid) return;
+    if (!products.length) {
+        grid.className = GRID_CLASSES;
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-16 text-soft">
+            No items found.
+          </div>
+        `;
+        return;
+    }
+    const sectioned = (!filters.category || filters.category === "all") && !filters.search && COLLECTIONS.length;
+    if (sectioned) {
+        grid.className = "shop-sections";
+        grid.innerHTML = shopSectionsMarkup(products);
+    } else {
+        grid.className = GRID_CLASSES;
+        grid.innerHTML = products.map(product => productCardMarkup(product)).join("");
+    }
+    if (!grid.dataset.rowArrowsBound) {
+        grid.dataset.rowArrowsBound = "1";
+        grid.addEventListener("click", event => {
+            const arrow = event.target.closest(".shop-row-arrow");
+            if (!arrow) return;
+            const track = arrow.parentElement.querySelector(".shop-row-track");
+            track.scrollBy({ left: Number(arrow.dataset.dir) * track.clientWidth * 0.85, behavior: "smooth" });
+        });
+    }
+    attachCartEvents();
+}
 let cartId = localStorage.getItem("shopify_cart");
 const cartItemsContainer = document.getElementById("cart-items");
 const emptyCartBlock = document.querySelector("#cart .empty-cart");
