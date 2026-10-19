@@ -86,11 +86,11 @@
     const footerAndUtilities = `
         <footer class="bg-surface border-t border-token pt-16 pb-8">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="mb-12">
+                <div class="mb-12 text-center">
                     <div class="font-display font-bold text-xl mb-4">PIXEL<span class="text-violet">BLOXY</span></div>
-                    <p class="text-soft text-sm leading-relaxed max-w-xs">The fastest, most trusted shop for Roblox digital items. Instant delivery, real humans, 24/7.</p>
+                    <p class="text-soft text-sm leading-relaxed max-w-xs mx-auto">The fastest, most trusted shop for Roblox digital items. Instant delivery, real humans, 24/7.</p>
                 </div>
-                <div class="border-t border-token pt-8 pb-24 flex flex-col md:flex-row justify-between items-center text-xs text-soft gap-4">
+                <div class="border-t border-token pt-8 pb-24 flex flex-col items-center justify-center text-center text-xs text-soft gap-4">
                     <p>© 2026 PixelBloxy. Not affiliated with Roblox Corporation.</p>
                     <div class="flex gap-4 text-base">
                         <a href="https://tiktok.com" class="hover:text-violet transition-colors" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a>
