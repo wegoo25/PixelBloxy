@@ -71,14 +71,14 @@ async function getShopifyProduct({ handle = null, id = null } = {}) {
                 }
 
                 featuredImage {
-                    url
+                    url(transform: { maxWidth: 800 })
                     altText
                 }
 
                 images(first: 12) {
                     edges {
                         node {
-                            url
+                            url(transform: { maxWidth: 800 })
                             altText
                         }
                     }
@@ -103,7 +103,7 @@ async function getShopifyProduct({ handle = null, id = null } = {}) {
                             }
 
                             image {
-                                url
+                                url(transform: { maxWidth: 800 })
                                 altText
                             }
                         }
@@ -139,14 +139,14 @@ async function getShopifyProduct({ handle = null, id = null } = {}) {
                 }
 
                 featuredImage {
-                    url
+                    url(transform: { maxWidth: 800 })
                     altText
                 }
 
                 images(first: 12) {
                     edges {
                         node {
-                            url
+                            url(transform: { maxWidth: 800 })
                             altText
                         }
                     }
@@ -171,7 +171,7 @@ async function getShopifyProduct({ handle = null, id = null } = {}) {
                             }
 
                             image {
-                                url
+                                url(transform: { maxWidth: 800 })
                                 altText
                             }
                         }
@@ -954,160 +954,23 @@ async function renderRelatedProducts(currentProduct) {
 
 
     /*
-     * If the Shopify.js data isn't available or there aren't
-     * enough same-category products, fetch related products.
+     * Related products come from the catalog shopify.js already loads,
+     * so this page makes no extra request for them.
      */
-
-    if (relatedProducts.length < 4) {
-
-        try {
-
-            const data =
-                await shopifyProductRequest(`
-                    {
-                        products(first: 20) {
-                            edges {
-                                node {
-                                    id
-                                    title
-                                    handle
-                                    featuredImage {
-                                        url
-                                        altText
-                                    }
-                                    collections(first: 5) {
-                                        edges {
-                                            node {
-                                                handle
-                                                title
-                                            }
-                                        }
-                                    }
-                                    variants(first: 1) {
-                                        edges {
-                                            node {
-                                                id
-                                                availableForSale
-                                                price {
-                                                    amount
-                                                }
-                                                compareAtPrice {
-                                                    amount
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                `);
-
-            const fetched =
-                data.products.edges
-                    .map(edge => edge.node)
-                    .filter(product =>
-                        product.handle !==
-                        currentProduct.handle
-                    )
-                    .filter(product => {
-
-                        if (
-                            !currentProduct.categoryHandle
-                        ) {
-                            return true;
-                        }
-
-                        return product.collections.edges
-                            .some(edge =>
-                                edge.node.handle ===
-                                currentProduct.categoryHandle
-                            );
-                    })
-                    .map(product => {
-
-                        const variant =
-                            product.variants.edges[0]?.node;
-
-                        if (!variant) {
-                            return null;
-                        }
-
-                        return {
-                            id: product.id,
-                            title: product.title,
-                            handle: product.handle,
-
-                            image:
-                                product.featuredImage?.url ||
-                                "placeholder.png",
-
-                            price:
-                                Number(
-                                    variant.price.amount
-                                ),
-
-                            compareAtPrice:
-                                variant.compareAtPrice?.amount
-                                    ? Number(
-                                        variant.compareAtPrice.amount
-                                    )
-                                    : null,
-
-                            variantId:
-                                variant.id,
-
-                            available:
-                                variant.availableForSale,
-
-                            categories:
-                                product.collections.edges.map(
-                                    edge =>
-                                        edge.node.handle
-                                )
-                        };
-                    })
-                    .filter(Boolean);
-
-            /*
-             * Combine existing and fetched products without
-             * duplicates.
-             */
-
-            const combined = [
-                ...relatedProducts,
-                ...fetched
-            ];
-
-            const seen = new Set();
-
-            relatedProducts =
-                combined
-                    .filter(product => {
-
-                        if (!product.handle) {
-                            return false;
-                        }
-
-                        if (seen.has(product.handle)) {
-                            return false;
-                        }
-
-                        seen.add(product.handle);
-
-                        return true;
-                    })
-                    .slice(0, 4);
-
-        } catch (error) {
-
-            console.error(
-                "Failed to load related products:",
-                error
-            );
+    if (typeof PRODUCTS === "undefined" || !PRODUCTS.length) {
+        grid.innerHTML = `
+            <div class="col-span-full text-center py-10 text-soft">
+                Loading related products...
+            </div>
+        `;
+        if (!window.relatedListenersBound) {
+            window.relatedListenersBound = true;
+            const retry = () => renderRelatedProducts(CURRENT_PRODUCT);
+            window.addEventListener("shopify:products-loaded", retry, { once: true });
+            window.addEventListener("shopify:products-error", retry, { once: true });
         }
+        return;
     }
-
 
     /*
      * If there are still no related products, show a message.
@@ -1976,26 +1839,11 @@ async function loadProductPage() {
     const params =
         new URLSearchParams(window.location.search);
 
-    /*
-     * Support both URL formats.
-     *
-     * Current shopify.js:
-     * product.html?id=gid://shopify/Product/123
-     *
-     * New format:
-     * product.html?handle=golden-unicorn-pet
-     */
-
     const handle =
         params.get("handle");
 
     const id =
         params.get("id");
-
-
-    /*
-     * We need either an ID or a handle.
-     */
 
     if (!handle && !id) {
 
@@ -2006,10 +1854,50 @@ async function loadProductPage() {
         return;
     }
 
+    const cacheKey =
+        `pixelbloxy_product_v1:${(handle || id).trim().toLowerCase()}`;
+
+    const showProduct = rawProduct => {
+
+        const product =
+            normalizeShopifyProduct(rawProduct);
+
+        if (!product) {
+            return false;
+        }
+
+        renderProduct(product);
+
+        const content =
+            document.getElementById("product-content");
+
+        if (content) {
+            content.style.display = "";
+        }
+
+        document
+            .getElementById("product-not-found")
+            ?.classList.add("hidden");
+
+        return true;
+    };
 
     /*
-     * Load product from Shopify.
+     * Show the cached copy immediately, then refresh from Shopify.
      */
+    let cachedJson = "";
+
+    try {
+        cachedJson =
+            localStorage.getItem(cacheKey) || "";
+
+        if (cachedJson) {
+            showProduct(JSON.parse(cachedJson));
+        }
+    } catch (error) {
+        cachedJson = "";
+        localStorage.removeItem(cacheKey);
+    }
 
     try {
 
@@ -2019,8 +1907,9 @@ async function loadProductPage() {
                 id
             });
 
-
         if (!rawProduct) {
+
+            localStorage.removeItem(cacheKey);
 
             showProductNotFound(
                 "This product could not be found in Shopify."
@@ -2029,63 +1918,25 @@ async function loadProductPage() {
             return;
         }
 
+        const freshJson =
+            JSON.stringify(rawProduct);
 
-        /*
-         * Convert Shopify data into the format
-         * used by the product page.
-         */
+        if (freshJson === cachedJson) {
+            return;
+        }
 
-        const product =
-            normalizeShopifyProduct(
-                rawProduct
-            );
+        try {
+            localStorage.setItem(cacheKey, freshJson);
+        } catch (error) {
+            // Storage unavailable; the page still works without the cache.
+        }
 
-
-        if (!product) {
+        if (!showProduct(rawProduct)) {
 
             showProductNotFound(
                 "This product has no purchasable variant."
             );
-
-            return;
         }
-
-
-        /*
-         * Render everything.
-         */
-
-        renderProduct(product);
-
-
-        /*
-         * Show the product page.
-         */
-
-        const content =
-            document.getElementById(
-                "product-content"
-            );
-
-        if (content) {
-            content.style.display = "";
-        }
-
-
-        /*
-         * Hide the not-found screen if it
-         * was previously displayed.
-         */
-
-        const notFound =
-            document.getElementById(
-                "product-not-found"
-            );
-
-        if (notFound) {
-            notFound.classList.add("hidden");
-        }
-
 
     } catch (error) {
 
@@ -2094,12 +1945,14 @@ async function loadProductPage() {
             error
         );
 
-        showProductNotFound(
-            "We couldn't load this product. Please try again."
-        );
+        if (!cachedJson) {
+
+            showProductNotFound(
+                "We couldn't load this product. Please try again."
+            );
+        }
     }
 }
-
 
 /* ============================================================
    PAGE INITIALIZATION
