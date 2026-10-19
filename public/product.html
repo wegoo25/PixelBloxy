@@ -160,6 +160,8 @@
             border-radius: 9999px;
             display: inline-block;
         }
+        #product-discount { position: static; }
+        #product-discount.hidden, #product-old-price.hidden { display: none; }
         .old-price {
             text-decoration: line-through;
             color: var(--text-soft);
@@ -431,7 +433,7 @@
             </div>
 
             <!-- Product Content -->
-            <div id="product-content">
+            <div id="product-content" style="display:none">
                 <!-- Product Section -->
                 <div class="product-layout mb-16">
                     <!-- Gallery -->
