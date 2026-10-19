@@ -108,31 +108,6 @@ const mobileMenu = document.getElementById("mobile-menu");
 const mobileDrawer = document.getElementById("mobile-drawer");
 const menuOverlay = document.getElementById("menu-overlay");
 
-const mobileShopLink = mobileDrawer?.querySelector('a[href="shop.html"]');
-if (mobileShopLink && !document.getElementById("mobile-category-section")) {
-    const categorySection = document.createElement("div");
-    categorySection.id = "mobile-category-section";
-    categorySection.className = "mobile-category-section";
-    categorySection.innerHTML = `
-        <button type="button" id="mobile-category-toggle" class="mobile-category-toggle" aria-expanded="false" aria-controls="mobile-category-list">
-            <span>Categories</span>
-            <i class="fas fa-chevron-down" aria-hidden="true"></i>
-        </button>
-        <div id="mobile-category-list" class="mobile-category-list hidden"></div>
-    `;
-    mobileShopLink.insertAdjacentElement("afterend", categorySection);
-
-    const categoryToggle = categorySection.querySelector("#mobile-category-toggle");
-    const categoryList = categorySection.querySelector("#mobile-category-list");
-    categoryToggle.addEventListener("click", () => {
-        const expanded = categoryToggle.getAttribute("aria-expanded") === "true";
-        categoryToggle.setAttribute("aria-expanded", String(!expanded));
-        categoryList.classList.toggle("hidden", expanded);
-        categoryToggle.querySelector("i")?.classList.toggle("fa-chevron-up", !expanded);
-        categoryToggle.querySelector("i")?.classList.toggle("fa-chevron-down", expanded);
-    });
-}
-
 const desktopNav = document.getElementById("desktop-nav");
 const desktopShopLink = document.getElementById("shop-link");
 if (desktopNav && desktopShopLink && !desktopNav.querySelector(".nav-wishlist")) {
@@ -146,14 +121,13 @@ if (desktopNav && desktopShopLink && !desktopNav.querySelector(".nav-wishlist"))
     desktopShopLink.closest(".relative")?.insertAdjacentElement("afterend", wishlistLink);
 }
 
-const mobileCategorySection = document.getElementById("mobile-category-section");
 const mobileShopLinkForWishlist = mobileDrawer?.querySelector('a[href="shop.html"]');
 if (mobileDrawer && mobileShopLinkForWishlist && !mobileDrawer.querySelector(".mobile-wishlist-link")) {
     const wishlistLink = document.createElement("a");
     wishlistLink.href = "wishlist.html";
     wishlistLink.className = "mobile-wishlist-link text-left px-4 py-3 rounded-xl hover:bg-app-soft font-medium";
     wishlistLink.textContent = "Wishlist";
-    (mobileCategorySection || mobileShopLinkForWishlist).insertAdjacentElement("afterend", wishlistLink);
+    mobileShopLinkForWishlist.insertAdjacentElement("afterend", wishlistLink);
 }
 
 function openCart(){

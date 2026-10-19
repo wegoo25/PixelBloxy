@@ -182,7 +182,7 @@ function bindCategoryLinks() {
 }
 
 function populateShopDropdown() {
-    const links = COLLECTIONS.map(c => `
+    const links = COLLECTIONS.filter(c => c.handle !== "all").map(c => `
         <a href="shop.html?category=${encodeURIComponent(c.handle)}">${c.title}</a>
     `).join('');
     const desktopContainer = document.getElementById('shop-dropdown-list')
@@ -527,8 +527,12 @@ function shopSectionsMarkup(sections) {
                     <button type="button" class="shop-row-arrow" data-dir="1" aria-label="Scroll right"><i class="fas fa-chevron-right"></i></button>
                 </div>
             </div>
-            <div class="shop-row-track">
-                ${section.items.map(product => `<div class="shop-row-item">${productCardMarkup(product, "p-3")}</div>`).join("")}
+            <div class="shop-row">
+                <button type="button" class="shop-row-arrow shop-row-edge shop-row-prev" data-dir="-1" aria-label="Scroll left"><i class="fas fa-chevron-left"></i></button>
+                <div class="shop-row-track">
+                    ${section.items.map(product => `<div class="shop-row-item">${productCardMarkup(product, "p-3")}</div>`).join("")}
+                </div>
+                <button type="button" class="shop-row-arrow shop-row-edge shop-row-next" data-dir="1" aria-label="Scroll right"><i class="fas fa-chevron-right"></i></button>
             </div>
         </section>
     `).join("");
