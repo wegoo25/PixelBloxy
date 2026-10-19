@@ -181,21 +181,6 @@ function bindCategoryLinks() {
     });
 }
 
-function populateFooterGames() {
-    const list = document.getElementById('footer-games');
-    const collections = COLLECTIONS.filter(c => c.handle !== 'all');
-    if (!list || !collections.length) return;
-    list.replaceChildren(...collections.slice(0, 6).map(c => {
-        const li = document.createElement('li');
-        const a = document.createElement('a');
-        a.href = `shop.html?category=${encodeURIComponent(c.handle)}`;
-        a.className = 'hover:text-violet transition-colors';
-        a.textContent = c.title;
-        li.appendChild(a);
-        return li;
-    }));
-}
-
 function populateShopDropdown() {
     const links = COLLECTIONS.map(c => `
         <a href="shop.html?category=${encodeURIComponent(c.handle)}">${c.title}</a>
@@ -205,7 +190,6 @@ function populateShopDropdown() {
     const mobileContainer = document.getElementById('mobile-category-list');
     if (desktopContainer) desktopContainer.innerHTML = links;
     if (mobileContainer) mobileContainer.innerHTML = links;
-    populateFooterGames();
     bindCategoryLinks();
 }
 
@@ -307,6 +291,7 @@ async function initShopData() {
                 hasDiscount: compareAtPrice && compareAtPrice > price,
                 variantId: variant.id,
                 available: variant.availableForSale,
+                tags: node.tags || [],
                 categories: node.collections.edges.map(c => c.node.handle),
                 categoryName: node.collections.edges[0]?.node.title || "All categories"
             };
@@ -498,35 +483,52 @@ function productCardMarkup(product, bodyPadding = "p-5") {
     `;
 }
 
-const GRID_CLASSES = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6";
+const GRID_CLASSES = "grid grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-3";
 
-function shopSectionsMarkup(products) {
-    const isBestSellers = c => c.handle === "best-sellers" || /best\s*-?\s*sellers?/i.test(c.title);
-    const collections = COLLECTIONS
-        .filter(c => c.handle !== "all")
-        .sort((a, b) => Number(isBestSellers(b)) - Number(isBestSellers(a)));
-    const placed = new Set();
+const BEST_SELLERS_RE = /best\s*-?\s*sellers?/i;
+
+function buildShopSections(products) {
     const sections = [];
-    collections.forEach(collection => {
-        const items = products.filter(p => p.categories?.includes(collection.handle));
-        if (!items.length) return;
-        items.forEach(p => placed.add(p.id));
-        sections.push({ title: collection.title, href: `shop.html?category=${encodeURIComponent(collection.handle)}`, items });
-    });
-    const rest = products.filter(p => !placed.has(p.id));
-    if (rest.length) sections.push({ title: sections.length ? "More items" : "All items", href: "", items: rest });
+    const addSection = (title, href, items) => { if (items.length) sections.push({ title, href, items }); };
+    if (!filters.category || filters.category === "all") {
+        const placed = new Set();
+        COLLECTIONS
+            .filter(c => c.handle !== "all" && !BEST_SELLERS_RE.test(c.handle) && !BEST_SELLERS_RE.test(c.title))
+            .forEach(collection => {
+                const items = products.filter(p => p.categories?.includes(collection.handle));
+                items.forEach(p => placed.add(p.id));
+                addSection(collection.title, `shop.html?category=${encodeURIComponent(collection.handle)}`, items);
+            });
+        addSection(sections.length ? "More items" : "All items", "", products.filter(p => !placed.has(p.id)));
+        return sections;
+    }
+    // Inside a game: Best Sellers first, then one row per product tag (sub category).
+    const byTag = new Map();
+    products.forEach(p => (p.tags || []).forEach(tag => {
+        if (!byTag.has(tag)) byTag.set(tag, []);
+        byTag.get(tag).push(p);
+    }));
+    if (!byTag.size) return null;
+    const tags = [...byTag.keys()].sort((a, b) => Number(BEST_SELLERS_RE.test(b)) - Number(BEST_SELLERS_RE.test(a)));
+    tags.forEach(tag => addSection(tag, "", byTag.get(tag)));
+    const untagged = products.filter(p => !(p.tags || []).length);
+    addSection("More items", "", untagged);
+    return sections;
+}
+
+function shopSectionsMarkup(sections) {
     return sections.map(section => `
         <section class="shop-section">
             <div class="shop-section-head">
                 <h2 class="shop-section-title">${escapeHtml(section.title)}</h2>
-                ${section.href ? `<a href="${section.href}" class="shop-section-link">View all <i class="fas fa-arrow-right"></i></a>` : ""}
-            </div>
-            <div class="shop-row">
-                <button type="button" class="shop-row-arrow shop-row-prev" data-dir="-1" aria-label="Scroll left"><i class="fas fa-chevron-left"></i></button>
-                <div class="shop-row-track">
-                    ${section.items.map(product => `<div class="shop-row-item">${productCardMarkup(product, "p-4")}</div>`).join("")}
+                <div class="shop-section-tools">
+                    ${section.href ? `<a href="${section.href}" class="shop-section-link">View all</a>` : ""}
+                    <button type="button" class="shop-row-arrow" data-dir="-1" aria-label="Scroll left"><i class="fas fa-chevron-left"></i></button>
+                    <button type="button" class="shop-row-arrow" data-dir="1" aria-label="Scroll right"><i class="fas fa-chevron-right"></i></button>
                 </div>
-                <button type="button" class="shop-row-arrow shop-row-next" data-dir="1" aria-label="Scroll right"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <div class="shop-row-track">
+                ${section.items.map(product => `<div class="shop-row-item">${productCardMarkup(product, "p-3")}</div>`).join("")}
             </div>
         </section>
     `).join("");
@@ -543,20 +545,20 @@ function renderProducts(products) {
         `;
         return;
     }
-    const sectioned = (!filters.category || filters.category === "all") && !filters.search && COLLECTIONS.length;
-    if (sectioned) {
+    const sections = !filters.search && COLLECTIONS.length ? buildShopSections(products) : null;
+    if (sections && sections.length) {
         grid.className = "shop-sections";
-        grid.innerHTML = shopSectionsMarkup(products);
+        grid.innerHTML = shopSectionsMarkup(sections);
     } else {
         grid.className = GRID_CLASSES;
-        grid.innerHTML = products.map(product => productCardMarkup(product)).join("");
+        grid.innerHTML = products.map(product => productCardMarkup(product, "p-3")).join("");
     }
     if (!grid.dataset.rowArrowsBound) {
         grid.dataset.rowArrowsBound = "1";
         grid.addEventListener("click", event => {
             const arrow = event.target.closest(".shop-row-arrow");
             if (!arrow) return;
-            const track = arrow.parentElement.querySelector(".shop-row-track");
+            const track = arrow.closest(".shop-section").querySelector(".shop-row-track");
             track.scrollBy({ left: Number(arrow.dataset.dir) * track.clientWidth * 0.85, behavior: "smooth" });
         });
     }

@@ -86,34 +86,9 @@
     const footerAndUtilities = `
         <footer class="bg-surface border-t border-token pt-16 pb-8">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-12">
-                    <div class="col-span-2">
-                        <div class="font-display font-bold text-xl mb-4">PIXEL<span class="text-violet">BLOXY</span></div>
-                        <p class="text-soft text-sm leading-relaxed max-w-xs">The fastest, most trusted shop for Roblox digital items. Instant delivery, real humans, 24/7.</p>
-                    </div>
-                    <div>
-                        <h4 class="font-display font-bold text-sm mb-4">Games</h4>
-                        <ul id="footer-games" class="space-y-2 text-sm text-soft">
-                            <li><a href="shop.html" class="hover:text-violet transition-colors">🌱 Grow A Garden 2</a></li>
-                            <li><a href="shop.html" class="hover:text-violet transition-colors">🐉 Adopt Me</a></li>
-                            <li><a href="shop.html" class="hover:text-violet transition-colors">🧠 Steal A Brainrot</a></li>
-                            <li><a href="shop.html" class="hover:text-violet transition-colors">🔪 Murder Mystery 2</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="font-display font-bold text-sm mb-4">Shop</h4>
-                        <ul class="space-y-2 text-sm text-soft">
-                            <li><a href="shop.html" class="hover:text-violet transition-colors">All items</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="font-display font-bold text-sm mb-4">Support</h4>
-                        <ul class="space-y-2 text-sm text-soft">
-                            <li><a href="help.html" class="hover:text-violet transition-colors">Help Center</a></li>
-                            <li><a href="contact.html" class="hover:text-violet transition-colors">Contact</a></li>
-                            <li><button onclick="toggleChat()" class="hover:text-violet transition-colors">Live chat</button></li>
-                        </ul>
-                    </div>
+                <div class="mb-12">
+                    <div class="font-display font-bold text-xl mb-4">PIXEL<span class="text-violet">BLOXY</span></div>
+                    <p class="text-soft text-sm leading-relaxed max-w-xs">The fastest, most trusted shop for Roblox digital items. Instant delivery, real humans, 24/7.</p>
                 </div>
                 <div class="border-t border-token pt-8 pb-24 flex flex-col md:flex-row justify-between items-center text-xs text-soft gap-4">
                     <p>© 2026 PixelBloxy. Not affiliated with Roblox Corporation.</p>
