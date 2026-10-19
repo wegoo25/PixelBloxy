@@ -1,9 +1,9 @@
-name: Deploy beta preview
+name: Deploy site
 
 on:
   push:
     branches:
-      - beta
+      - main
 
 permissions:
   contents: read
@@ -21,7 +21,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Check out beta branch
+      - name: Check out main branch
         uses: actions/checkout@v4
       - name: Configure backend URL
         env:
@@ -49,6 +49,6 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: public
-      - name: Deploy beta preview
+      - name: Deploy site
         id: deployment
         uses: actions/deploy-pages@v4
