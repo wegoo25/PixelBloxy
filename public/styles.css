@@ -1325,3 +1325,10 @@ translateY(-14px);
   .shop-row-next{ right:12px; }
   .shop-row[data-near="left"] .shop-row-prev, .shop-row[data-near="right"] .shop-row-next{ opacity:1; pointer-events:auto; }
 }
+/* Compact footer */
+.site-footer{ padding:1.5rem 0 .75rem; }
+.site-footer > div > .mb-12{ margin-bottom:.75rem; }
+.site-footer .font-display{ font-size:1rem; margin-bottom:.35rem; }
+.site-footer p.leading-relaxed{ font-size:.75rem; line-height:1.4; }
+.site-footer .border-t{ padding-top:.75rem; padding-bottom:4rem; gap:.5rem; }
+.site-footer .border-t .text-base{ font-size:.9rem; }
