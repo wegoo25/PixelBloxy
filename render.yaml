@@ -3,7 +3,7 @@ services:
     name: pixelbloxy-api
     runtime: node
     plan: free
-    branch: beta
+    branch: main
     buildCommand: npm ci
     startCommand: npm start
     healthCheckPath: /
