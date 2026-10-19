@@ -287,6 +287,13 @@ body{
     color:var(--violet);
     box-shadow:none;
   }
+  .site-floating-chat button:hover,
+  .site-floating-chat button:focus,
+  .site-floating-chat button:active{
+    background:var(--violet);
+    color:#fff;
+    outline:none;
+  }
   .site-floating-chat button i{ margin:0; }
   .site-floating-chat button span{ display:none; }
   .wishlist-page{ padding-top:2rem; padding-bottom:3.5rem; }
