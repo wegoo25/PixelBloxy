@@ -86,7 +86,7 @@
     const footerAndUtilities = `
         <footer class="bg-surface border-t border-token pt-16 pb-8">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 mb-12">
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-12">
                     <div class="col-span-2">
                         <div class="font-display font-bold text-xl mb-4">PIXEL<span class="text-violet">BLOXY</span></div>
                         <p class="text-soft text-sm leading-relaxed max-w-xs">The fastest, most trusted shop for Roblox digital items. Instant delivery, real humans, 24/7.</p>
@@ -104,7 +104,6 @@
                         <h4 class="font-display font-bold text-sm mb-4">Shop</h4>
                         <ul class="space-y-2 text-sm text-soft">
                             <li><a href="shop.html" class="hover:text-violet transition-colors">All items</a></li>
-                            <li><a href="categories.html" class="hover:text-violet transition-colors">Categories</a></li>
                         </ul>
                     </div>
                     <div>
@@ -113,14 +112,6 @@
                             <li><a href="help.html" class="hover:text-violet transition-colors">Help Center</a></li>
                             <li><a href="contact.html" class="hover:text-violet transition-colors">Contact</a></li>
                             <li><button onclick="toggleChat()" class="hover:text-violet transition-colors">Live chat</button></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="font-display font-bold text-sm mb-4">Company</h4>
-                        <ul class="space-y-2 text-sm text-soft">
-                            <li><a href="#" class="hover:text-violet transition-colors">Privacy Policy</a></li>
-                            <li><a href="#" class="hover:text-violet transition-colors">Terms of Service</a></li>
-                            <li><a href="#" class="hover:text-violet transition-colors">Refund Policy</a></li>
                         </ul>
                     </div>
                 </div>

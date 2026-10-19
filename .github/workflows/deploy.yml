@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -41,7 +42,7 @@ jobs:
               encoding="utf-8",
           )
           if not api_url:
-              print("PIXELBLOXY_API_URL is empty; Shopify/chat APIs will not work on the static preview yet.")
+              print("PIXELBLOXY_API_URL is empty; the AI chat will not work on the static site.")
           PY
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

@@ -181,6 +181,21 @@ function bindCategoryLinks() {
     });
 }
 
+function populateFooterGames() {
+    const list = document.getElementById('footer-games');
+    const collections = COLLECTIONS.filter(c => c.handle !== 'all');
+    if (!list || !collections.length) return;
+    list.replaceChildren(...collections.slice(0, 6).map(c => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = `shop.html?category=${encodeURIComponent(c.handle)}`;
+        a.className = 'hover:text-violet transition-colors';
+        a.textContent = c.title;
+        li.appendChild(a);
+        return li;
+    }));
+}
+
 function populateShopDropdown() {
     const links = COLLECTIONS.map(c => `
         <a href="shop.html?category=${encodeURIComponent(c.handle)}">${c.title}</a>
@@ -190,6 +205,7 @@ function populateShopDropdown() {
     const mobileContainer = document.getElementById('mobile-category-list');
     if (desktopContainer) desktopContainer.innerHTML = links;
     if (mobileContainer) mobileContainer.innerHTML = links;
+    populateFooterGames();
     bindCategoryLinks();
 }
 
