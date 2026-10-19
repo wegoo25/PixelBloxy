@@ -84,7 +84,7 @@
     `;
 
     const footerAndUtilities = `
-        <footer class="site-footer bg-surface border-t border-token">
+        <footer class="bg-surface border-t border-token pt-16 pb-8">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="mb-12 text-center">
                     <div class="font-display font-bold text-xl mb-4">PIXEL<span class="text-violet">BLOXY</span></div>
