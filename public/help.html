@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="logo-head.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Help Center — Pixelbloxy</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link href="tailwind.css" rel="stylesheet">
+<link href="styles.css" rel="stylesheet">
+</head>
+<body class="antialiased">
+<div class="grain"></div>
+
+
+<div id="site-header-shell"></div>
+
+<main id="app" class="pt-20 min-h-screen">
+<!-- ================= HELP ================= -->
+<div id="page-help" class="page-section">
+  <section class="pt-16 pb-16 px-4 text-center" style="background:var(--violet)">
+    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 text-white text-xs font-bold uppercase tracking-wide mb-5">
+      <i class="fas fa-headset"></i> 24/7 support
+    </div>
+    <h1 class="font-display font-bold text-4xl md:text-5xl text-white mb-4">Need a hand? We got you.</h1>
+    <p class="text-white/80 max-w-xl mx-auto mb-8">Search the help center, walk through claiming your order, or jump straight to a real person.</p>
+    <div class="max-w-xl mx-auto relative">
+      <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+      <input id="help-search" type="text" placeholder="Search help articles..." class="w-full pl-12 pr-4 py-4 rounded-full outline-none text-sm text-slate-900 shadow-xl">
+    </div>
+  </section>
+
+  <!-- Quick links -->
+  <section class="py-16 px-4">
+    <div class="max-w-6xl mx-auto grid md:grid-cols-3 gap-6">
+      <div class="bg-surface border border-token rounded-3xl p-8 hover:-translate-y-1 transition-transform">
+        <div class="w-12 h-12 rounded-2xl bg-violet-soft text-violet flex items-center justify-center text-lg mb-4"><i class="fas fa-box"></i></div>
+        <h3 class="font-display font-bold text-lg mb-2">Orders &amp; Claims</h3>
+        <p class="text-soft text-sm">How delivery works and what to do if an item hasn't shown up yet.</p>
+      </div>
+      <div class="bg-surface border border-token rounded-3xl p-8 hover:-translate-y-1 transition-transform">
+        <div class="w-12 h-12 rounded-2xl bg-violet-soft text-violet flex items-center justify-center text-lg mb-4"><i class="fas fa-wrench"></i></div>
+        <h3 class="font-display font-bold text-lg mb-2">Common Issues</h3>
+        <p class="text-soft text-sm">Fixes for the most frequent hiccups, from login trouble to trade errors.</p>
+      </div>
+      <div class="bg-surface border border-token rounded-3xl p-8 hover:-translate-y-1 transition-transform">
+        <div class="w-12 h-12 rounded-2xl bg-violet-soft text-violet flex items-center justify-center text-lg mb-4"><i class="fas fa-credit-card"></i></div>
+        <h3 class="font-display font-bold text-lg mb-2">Billing &amp; Payments</h3>
+        <p class="text-soft text-sm">Declined cards, missing charges, and everything payment-related.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tutorial -->
+  <section class="py-16 px-4 bg-app-soft border-y border-token">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="font-display font-bold text-3xl md:text-4xl mb-3">How to claim your items</h2>
+        <p class="text-soft">Three steps, usually done in under ten minutes.</p>
+      </div>
+      <div class="space-y-5">
+        <div class="flex flex-col md:flex-row gap-5 items-start bg-surface p-7 rounded-3xl border border-token">
+          <div class="w-12 h-12 rounded-2xl bg-violet text-white flex items-center justify-center text-lg flex-shrink-0"><i class="fas fa-shopping-bag"></i></div>
+          <div><h3 class="font-display font-bold text-lg mb-1.5">1. Pick your items</h3><p class="text-soft text-sm">Browse the shop and add whatever you want to your cart.</p></div>
+        </div>
+        <div class="flex flex-col md:flex-row gap-5 items-start bg-surface p-7 rounded-3xl border border-token">
+          <div class="w-12 h-12 rounded-2xl bg-violet text-white flex items-center justify-center text-lg flex-shrink-0"><i class="fas fa-credit-card"></i></div>
+          <div><h3 class="font-display font-bold text-lg mb-1.5">2. Checkout securely</h3><p class="text-soft text-sm">Complete your purchase with any supported payment method.</p></div>
+        </div>
+        <div class="flex flex-col md:flex-row gap-5 items-start bg-surface p-7 rounded-3xl border border-token">
+          <div class="w-12 h-12 rounded-2xl bg-violet text-white flex items-center justify-center text-lg flex-shrink-0"><i class="fas fa-gift"></i></div>
+          <div class="flex-1">
+            <h3 class="font-display font-bold text-lg mb-1.5">3. Claim your items</h3>
+            <p class="text-soft text-sm mb-4">Two easy ways to get your order — pick whichever's faster for you.</p>
+            <div class="grid sm:grid-cols-2 gap-3">
+              <div class="bg-app-soft p-4 rounded-2xl border border-token">
+                <div class="font-bold text-violet text-sm mb-1"><i class="fas fa-comments mr-1.5"></i>Live chat</div>
+                <p class="text-xs text-soft">Tap the chat button, enter your email, and type "CLAIM ORDER".</p>
+              </div>
+              <div class="bg-app-soft p-4 rounded-2xl border border-token">
+                <div class="font-bold text-indigo-400 text-sm mb-1"><i class="fab fa-discord mr-1.5"></i>Discord ticket</div>
+                <p class="text-xs text-soft">Join our Discord and open a ticket for detailed help.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Full FAQ -->
+  <section class="py-16 px-4">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-10">
+        <h2 class="font-display font-bold text-3xl md:text-4xl mb-3">Frequently asked questions</h2>
+      </div>
+      <div id="faq-full" class="space-y-3">
+      <details class="bg-surface border border-token rounded-2xl overflow-hidden faq-item">
+      <summary class="w-full flex justify-between items-center gap-4 p-5 text-left font-semibold text-sm hover:bg-app-soft transition-colors cursor-pointer list-none">
+        <span>Where can I buy cheap Grow A Garden 2 (GAG2) pets?</span>
+        <i class="fas fa-chevron-down text-soft text-xs acc-chevron flex-shrink-0"></i>
+      </summary>
+      <div class="px-5 pb-5 text-soft text-sm leading-relaxed">Pixelbloxy is a go-to GAG2 store for cheap Grow A Garden 2 pets. Browse the GAG2 collection, pick what you want, check out securely, and we deliver in-game.</div>
+    </details>
+      <details class="bg-surface border border-token rounded-2xl overflow-hidden faq-item">
+      <summary class="w-full flex justify-between items-center gap-4 p-5 text-left font-semibold text-sm hover:bg-app-soft transition-colors cursor-pointer list-none">
+        <span>Is Pixelbloxy safe and legit?</span>
+        <i class="fas fa-chevron-down text-soft text-xs acc-chevron flex-shrink-0"></i>
+      </summary>
+      <div class="px-5 pb-5 text-soft text-sm leading-relaxed">Yes — Pixelbloxy is a trusted marketplace with thousands of completed orders, secure payment methods, instant delivery, and 24/7 human support.</div>
+    </details>
+      <details class="bg-surface border border-token rounded-2xl overflow-hidden faq-item">
+      <summary class="w-full flex justify-between items-center gap-4 p-5 text-left font-semibold text-sm hover:bg-app-soft transition-colors cursor-pointer list-none">
+        <span>How do I receive my items?</span>
+        <i class="fas fa-chevron-down text-soft text-xs acc-chevron flex-shrink-0"></i>
+      </summary>
+      <div class="px-5 pb-5 text-soft text-sm leading-relaxed">After checkout, tap the chat button in the bottom right, enter your email, and type "CLAIM ORDER" for a staff member to assist within minutes.</div>
+    </details>
+      <details class="bg-surface border border-token rounded-2xl overflow-hidden faq-item">
+      <summary class="w-full flex justify-between items-center gap-4 p-5 text-left font-semibold text-sm hover:bg-app-soft transition-colors cursor-pointer list-none">
+        <span>What if something goes wrong?</span>
+        <i class="fas fa-chevron-down text-soft text-xs acc-chevron flex-shrink-0"></i>
+      </summary>
+      <div class="px-5 pb-5 text-soft text-sm leading-relaxed">Our support team is available around the clock. Open a ticket on the Contact page and we'll fix the issue or refund you.</div>
+    </details>
+      <details class="bg-surface border border-token rounded-2xl overflow-hidden faq-item">
+      <summary class="w-full flex justify-between items-center gap-4 p-5 text-left font-semibold text-sm hover:bg-app-soft transition-colors cursor-pointer list-none">
+        <span>Can I get free items?</span>
+        <i class="fas fa-chevron-down text-soft text-xs acc-chevron flex-shrink-0"></i>
+      </summary>
+      <div class="px-5 pb-5 text-soft text-sm leading-relaxed">We run a free daily spin wheel where every spin wins something, plus regular Discord giveaways.</div>
+    </details>
+      <details class="bg-surface border border-token rounded-2xl overflow-hidden faq-item">
+      <summary class="w-full flex justify-between items-center gap-4 p-5 text-left font-semibold text-sm hover:bg-app-soft transition-colors cursor-pointer list-none">
+        <span>Can I get a refund?</span>
+        <i class="fas fa-chevron-down text-soft text-xs acc-chevron flex-shrink-0"></i>
+      </summary>
+      <div class="px-5 pb-5 text-soft text-sm leading-relaxed">Since items are digital goods, we don't offer refunds after delivery — but if something goes wrong on our end, support will make it right.</div>
+    </details>
+      <details class="bg-surface border border-token rounded-2xl overflow-hidden faq-item">
+      <summary class="w-full flex justify-between items-center gap-4 p-5 text-left font-semibold text-sm hover:bg-app-soft transition-colors cursor-pointer list-none">
+        <span>How fast is delivery?</span>
+        <i class="fas fa-chevron-down text-soft text-xs acc-chevron flex-shrink-0"></i>
+      </summary>
+      <div class="px-5 pb-5 text-soft text-sm leading-relaxed">Most orders are delivered within 5–10 minutes of checkout.</div>
+    </details>
+      <details class="bg-surface border border-token rounded-2xl overflow-hidden faq-item">
+      <summary class="w-full flex justify-between items-center gap-4 p-5 text-left font-semibold text-sm hover:bg-app-soft transition-colors cursor-pointer list-none">
+        <span>Do you need my Roblox password?</span>
+        <i class="fas fa-chevron-down text-soft text-xs acc-chevron flex-shrink-0"></i>
+      </summary>
+      <div class="px-5 pb-5 text-soft text-sm leading-relaxed">Never. We only need your username to complete an in-game trade.</div>
+    </details>
+      </div>
+      <div id="faq-no-results" class="hidden text-center py-10 text-soft">
+        <p>No articles match your search.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="pb-20 px-4">
+    <div class="max-w-4xl mx-auto bg-surface border border-token rounded-3xl p-10 text-center">
+      <h3 class="font-display font-bold text-2xl mb-2">Still stuck?</h3>
+      <p class="text-soft mb-6">Our team is online around the clock.</p>
+      <a href="contact.html" class="btn-primary px-7 py-3.5 rounded-full font-semibold text-sm inline-block">Contact support</a>
+    </div>
+  </section>
+</div>
+</main>
+
+<div id="site-footer-shell"></div>
+
+<script src="site-shell.js"></script>
+<script src="script.js"></script>
+<script src="shopify.js"></script>
+</body>
+</html>

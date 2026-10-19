@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="logo-head.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product — PixelBloxy</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link href="tailwind.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <style>
+        /* Additional styles for product page */
+        .product-gallery-thumb {
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            opacity: 0.6;
+        }
+        .product-gallery-thumb:hover {
+            opacity: 1;
+            border-color: var(--violet);
+        }
+        .product-gallery-thumb.active {
+            opacity: 1;
+            border-color: var(--violet);
+            box-shadow: 0 0 0 4px color-mix(in srgb, var(--violet) 20%, transparent);
+        }
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: var(--text-soft);
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: transparent;
+        }
+        .tab-btn:hover {
+            color: var(--text);
+        }
+        .tab-btn.active {
+            color: var(--violet);
+            border-bottom-color: var(--violet);
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .quantity-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 9999px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        .quantity-btn:hover {
+            background: var(--violet);
+            color: white;
+            border-color: var(--violet);
+        }
+        .quantity-input {
+            width: 60px;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 600;
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.5rem;
+        }
+        .spec-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .spec-table tr:last-child td {
+            border-bottom: none;
+        }
+        .spec-table td:first-child {
+            font-weight: 600;
+            color: var(--text-soft);
+            width: 40%;
+        }
+        .review-card {
+            background: var(--bg-soft);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+        }
+        .review-stars {
+            color: #f59e0b;
+        }
+        .wishlist-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 9999px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-soft);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        .wishlist-btn:hover {
+            background: var(--violet);
+            color: white;
+            border-color: var(--violet);
+        }
+        .wishlist-btn.active {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
+        }
+        .share-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 9999px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-soft);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        .share-btn:hover {
+            background: var(--violet);
+            color: white;
+            border-color: var(--violet);
+        }
+        .discount-badge {
+            background: #ef4444;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            display: inline-block;
+        }
+        .old-price {
+            text-decoration: line-through;
+            color: var(--text-soft);
+            font-size: 1rem;
+            margin-right: 0.75rem;
+        }
+        .product-not-found {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        .product-not-found i {
+            font-size: 4rem;
+            color: var(--text-soft);
+            margin-bottom: 1.5rem;
+        }
+        .product-not-found h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .product-not-found p {
+            color: var(--text-soft);
+            margin-bottom: 2rem;
+        }
+        @media (max-width: 768px) {
+            .product-gallery-thumbnails {
+                display: flex;
+                gap: 0.5rem;
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
+            }
+            .product-gallery-thumbnails img {
+                width: 80px;
+                height: 80px;
+                object-fit: cover;
+                border-radius: 8px;
+                flex-shrink: 0;
+            }
+            .tab-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.75rem;
+            }
+        }
+        .product-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+            align-items: start;
+            gap: 48px;
+            margin-bottom: 3rem;
+        }
+        @media (min-width: 901px) {
+            #product-gallery {
+                width: 100%;
+                max-width: 520px;
+                margin-inline: auto;
+            }
+            #thumbnail-container {
+                max-width: 520px;
+                margin-inline: auto;
+            }
+        }
+        .product-gallery-main {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            background: var(--surface-2);
+        }
+        .product-gallery-main img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 0;
+        }
+        .product-gallery-thumbnails {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, 84px);
+            gap: 12px;
+        }
+        .product-gallery-thumb {
+            width: 84px;
+            height: 84px;
+            border-radius: 12px;
+            background: var(--surface-2);
+        }
+        #product-details {
+            min-width: 0;
+            padding: 12px 0;
+        }
+        #product-title {
+            font-size: 2.5rem;
+            line-height: 1.08;
+            overflow-wrap: anywhere;
+        }
+        #product-description {
+            max-width: 58ch;
+            font-size: 1rem;
+        }
+        #product-features {
+            padding-top: 18px;
+            border-top: 1px solid var(--border);
+        }
+        .product-action-row {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr);
+            align-items: center;
+            gap: 12px;
+        }
+        #add-to-cart-btn,
+        #buy-now-btn {
+            min-height: 50px;
+            white-space: nowrap;
+        }
+        #buy-now-btn {
+            grid-column: 1 / -1;
+        }
+        .product-delivery-note {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 14px 0 0;
+            color: var(--text-soft);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        #related-products-section {
+            margin-top: 3rem;
+        }
+        #related-products-section > h2 {
+            margin-bottom: 1.25rem;
+        }
+        @media (max-width: 640px) {
+            #related-products-section {
+                margin-top: 2rem;
+            }
+            #related-products-section > h2 {
+                margin-bottom: 1rem;
+                font-size: 1.35rem;
+            }
+            #related-products-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 12px;
+            }
+            .product-page-related-card {
+                min-width: 0;
+                padding: 10px !important;
+                border-radius: 16px;
+            }
+            .product-related-image-wrap {
+                width: 100%;
+                aspect-ratio: 1 / 1;
+                margin-bottom: 10px;
+                border-radius: 10px;
+            }
+            .product-related-image {
+                display: block;
+                width: 100%;
+                height: 100% !important;
+                margin: 0 !important;
+                object-fit: contain;
+                border-radius: 10px !important;
+            }
+            .product-page-related-card h3 {
+                margin: 0;
+                font-size: 0.88rem;
+                line-height: 1.35;
+                white-space: normal;
+                text-overflow: clip;
+                overflow-wrap: anywhere;
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 2;
+                overflow: hidden;
+            }
+            .product-page-related-card > div:last-child {
+                margin-top: 0.35rem !important;
+            }
+        }
+        .product-floating-chat button {
+            width: 52px;
+            height: 52px;
+            min-height: 52px;
+            padding: 0;
+            justify-content: center;
+            border-radius: 50%;
+            box-shadow: 0 12px 30px -16px var(--violet);
+        }
+        .product-floating-chat button i {
+            margin: 0;
+        }
+        .product-floating-chat button span {
+            display: none;
+        }
+        @media (max-width: 900px) {
+            .product-layout {
+                grid-template-columns: minmax(0, 1fr);
+                gap: 28px;
+                margin-bottom: 2rem;
+            }
+            .product-gallery-main {
+                height: auto;
+                min-height: 0;
+            }
+            #product-details {
+                padding-top: 0;
+            }
+            #product-title {
+                font-size: 2rem;
+            }
+        }
+        @media (max-width: 520px) {
+            #product-action-row {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+            }
+            #product-action-row > div {
+                grid-column: 1 / -1;
+            }
+            #add-to-cart-btn,
+            #buy-now-btn {
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+            #buy-now-btn {
+                grid-column: auto;
+            }
+            .product-floating-chat {
+                right: 16px;
+                bottom: 16px;
+            }
+            .product-floating-chat button {
+                width: 48px;
+                height: 48px;
+                min-height: 48px;
+                padding: 0;
+                justify-content: center;
+                border-radius: 50%;
+            }
+            .product-floating-chat button i {
+                margin: 0;
+            }
+            .product-floating-chat button span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="grain"></div>
+
+    <!-- Navbar -->
+
+<div id="site-header-shell"></div>
+
+<main id="app" class="pt-20 min-h-screen">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Product Not Found -->
+            <div id="product-not-found" class="product-not-found hidden">
+                <i class="fas fa-box-open"></i>
+                <h2>Product Not Found</h2>
+                <p>We couldn't find the product you're looking for. It may have been removed or the URL is incorrect.</p>
+                <a href="shop.html" class="inline-flex items-center gap-2 bg-violet text-white px-8 py-3 rounded-full font-medium transition-all hover:translate-y-[-2px] hover:shadow-lg" style="box-shadow: 0 14px 30px -12px rgba(59, 130, 246, 0.7);">
+    <i class="fas fa-arrow-left"></i>
+    Return to Shop
+</a>
+            </div>
+
+            <!-- Product Content -->
+            <div id="product-content">
+                <!-- Product Section -->
+                <div class="product-layout mb-16">
+                    <!-- Gallery -->
+                    <div id="product-gallery">
+                        <div class="product-gallery-main mb-4">
+                            <img id="main-image" src="" alt="" class="rounded-xl w-full">
+                        </div>
+                        <div id="thumbnail-container" class="product-gallery-thumbnails grid grid-cols-4 gap-3">
+                            <!-- Thumbnails rendered by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Details -->
+                    <div id="product-details">
+                        <div class="mb-2">
+                            <span id="product-brand" class="text-sm text-soft font-medium">Brand</span>
+                            <h1 id="product-title" class="font-display font-bold text-3xl mt-1">Product Title</h1>
+                        </div>
+
+                        <div class="flex items-center gap-3 mb-4">
+                            <div id="product-rating" class="flex items-center gap-1">
+                                <span class="text-amber-400"><i class="fas fa-star"></i></span>
+                                <span class="font-semibold">4.8</span>
+                                <span class="text-soft text-sm">(124 reviews)</span>
+                            </div>
+                            <span class="text-soft">|</span>
+                            <span id="product-category" class="text-sm text-soft">Category</span>
+                        </div>
+
+                        <div class="flex items-center gap-3 mb-4">
+                            <span id="product-price" class="font-display font-bold text-3xl text-violet">$0.00</span>
+                            <span id="product-old-price" class="old-price hidden">$0.00</span>
+                            <span id="product-discount" class="discount-badge hidden">-0%</span>
+                        </div>
+
+                        <div class="flex items-center gap-4 mb-6">
+                            <span id="product-availability" class="text-sm font-medium text-emerald-500">
+                                <i class="fas fa-check-circle mr-1"></i>In Stock
+                            </span>
+                            <span id="product-sku" class="text-sm text-soft">SKU: #0000</span>
+                        </div>
+
+                        <p id="product-description" class="text-soft leading-relaxed mb-6">
+                            Product description goes here.
+                        </p>
+
+                        <!-- Features -->
+                        <div id="product-features" class="mb-6">
+                            <h4 class="font-semibold mb-2">Key Features</h4>
+                            <ul id="features-list" class="space-y-1 text-sm text-soft">
+                                <!-- Features rendered by JS -->
+                            </ul>
+                        </div>
+
+                        <!-- Quantity and Actions -->
+                        <div id="product-action-row" class="product-action-row mb-6">
+                            <div class="flex items-center gap-2">
+                                <button class="quantity-btn" id="quantity-decrease" aria-label="Decrease quantity">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <input type="number" id="quantity-input" class="quantity-input" value="1" min="1" max="99" aria-label="Quantity">
+                                <button class="quantity-btn" id="quantity-increase" aria-label="Increase quantity">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <button id="add-to-cart-btn" class="btn-primary px-8 py-3 rounded-full font-medium flex-1">
+                                <i class="fas fa-shopping-cart mr-2"></i>Add to Cart
+                            </button>
+                            <button id="buy-now-btn" class="btn-ghost px-8 py-3 rounded-full font-medium">
+                                Buy Now
+                            </button>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex items-center gap-3">
+                            <button id="wishlist-btn" class="wishlist-btn" aria-label="Add to wishlist">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            <button id="share-btn" class="share-btn" aria-label="Share product">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                        </div>
+
+                        <!-- Shipping Info -->
+                        <p class="product-delivery-note">
+                            <i class="fas fa-bolt text-violet" aria-hidden="true"></i>
+                            <span>Estimated delivery within minutes</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="mb-16">
+                    <div class="flex border-b border-token mb-6 overflow-x-auto">
+                        <button class="tab-btn active" data-tab="description">Description</button>
+                        <button class="tab-btn" data-tab="specifications">Specifications</button>
+                        <button class="tab-btn" data-tab="reviews">Reviews</button>
+                    </div>
+
+                    <div id="tab-description" class="tab-content active">
+                        <div id="full-description" class="prose max-w-none text-soft leading-relaxed">
+                            <!-- Full description rendered by JS -->
+                        </div>
+                    </div>
+
+                    <div id="tab-specifications" class="tab-content">
+                        <table id="spec-table" class="spec-table w-full">
+                            <!-- Specifications rendered by JS -->
+                        </table>
+                    </div>
+
+                    <div id="tab-reviews" class="tab-content">
+                        <div id="reviews-container">
+                            <!-- Reviews rendered by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Related Products -->
+                <section id="related-products-section">
+                    <h2 class="font-display font-bold text-2xl mb-6">You Might Also Like</h2>
+                    <div id="related-products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        <!-- Related products rendered by JS -->
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+<div id="site-footer-shell"></div>
+
+<script src="site-shell.js"></script>
+<script src="shopify.js"></script>
+    <script src="product.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="logo-head.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wishlist — PixelBloxy</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link href="tailwind.css" rel="stylesheet">
+<link href="styles.css" rel="stylesheet">
+</head>
+<body class="antialiased">
+<div class="grain"></div>
+
+
+<div id="site-header-shell"></div>
+
+<main id="app" class="pt-20 min-h-screen">
+  <section class="wishlist-page px-4 py-12">
+    <div class="max-w-7xl mx-auto">
+    <header class="wishlist-page-header">
+      <div>
+        <p class="wishlist-eyebrow"><i class="fas fa-heart" aria-hidden="true"></i> YOUR SAVED ITEMS</p>
+        <h1 class="font-display">Wishlist</h1>
+      </div>
+      <p id="wishlist-count" class="wishlist-count" aria-live="polite">Loading wishlist...</p>
+    </header>
+    <div id="wishlist-grid" class="wishlist-grid" aria-live="polite"></div>
+    <div id="wishlist-empty" class="wishlist-empty hidden">
+      <div class="wishlist-empty-icon"><i class="far fa-heart" aria-hidden="true"></i></div>
+      <h2>Your wishlist is empty</h2>
+      <p>Save products you want to come back to.</p>
+      <a href="shop.html" class="btn-primary wishlist-browse-link">Browse the shop <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+    </div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer-shell"></div>
+
+<script src="site-shell.js"></script>
+<script src="shopify.js"></script>
+<script src="wishlist.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
