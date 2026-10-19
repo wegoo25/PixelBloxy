@@ -25,21 +25,16 @@ A Shopify Storefront-powered product site. The frontend is in `public/`; the Exp
 
 Keep Ollama running while testing chat. If it is not already running as a desktop service, start it in another terminal with `ollama serve`.
 
-## Beta preview on GitHub Pages
+## Deploying to GitHub Pages
 
-The `beta` branch publishes `public/` through `.github/workflows/deploy-beta.yml`.
+The `main` branch publishes `public/` through `.github/workflows/deploy.yml`.
 
 1. Create a GitHub repository and push the project files, including `public/`, `server.js`, `package.json`, `package-lock.json`, `.gitignore`, and this README. Do not commit `node_modules/` or private credentials.
-2. Push your preview work to a branch named `beta`:
+2. Push to the `main` branch.
 
-   ```powershell
-   git switch -c beta
-   git push -u origin beta
-   ```
-
-3. In Render, create a **Blueprint** from the repository's `beta` branch if you want the chat backend. Render reads `render.yaml`. Set `OLLAMA_URL` to a remotely reachable Ollama endpoint; `localhost` on Render is the Render machine, not your PC.
+3. In Render, create a **Blueprint** from the repository's `main` branch if you want the chat backend. Render reads `render.yaml`. Set `OLLAMA_URL` to a remotely reachable Ollama endpoint; `localhost` on Render is the Render machine, not your PC.
 4. Copy the deployed Render service URL, for example `https://pixelbloxy-api.onrender.com`.
 5. In GitHub, open **Settings → Secrets and variables → Actions → Variables** and add `PIXELBLOXY_API_URL` with that Render URL. This URL is public, so it is a repository variable, not a secret.
-6. In **Settings → Pages**, set **Build and deployment → Source** to **GitHub Actions**. Push to `beta` or rerun its workflow. The preview is published at `https://<account>.github.io/<repository>/` and uses Render only for chat.
+6. In **Settings → Pages**, set **Build and deployment → Source** to **GitHub Actions**. Push to `main` or rerun its workflow. The preview is published at `https://<account>.github.io/<repository>/` and uses Render only for chat.
 
 GitHub Pages is static. Shopify product/cart requests go directly to the Storefront API from the browser. The Express `/chat` route and Ollama model run on Render if configured. The Storefront token is public by design and must have only public Storefront permissions. The old token was previously committed, so rotate it in Shopify before relying on it.
