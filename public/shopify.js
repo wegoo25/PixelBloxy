@@ -229,88 +229,121 @@ async function loadProducts() {
     }
 }
 
-// Fetch collections and products site-wide so dropdown can be populated on every page
-async function initShopData() {
-    try {
-        const data = await shopifyRequest(`
-            {
-                collections(first: 50) {
-                    edges {
-                        node { id title handle }
+const CATALOG_CACHE_KEY = "pixelbloxy_catalog_v1";
+const CATALOG_QUERY = `
+    {
+        collections(first: 50) {
+            edges {
+                node { id title handle }
+            }
+        }
+        products(first: 100) {
+            edges {
+                node {
+                    id
+                    title
+                    description
+                    handle
+                    tags
+                    collections(first: 5) {
+                        edges {
+                            node { handle title }
+                        }
                     }
-                }
-                products(first: 100) {
-                    edges {
-                        node {
-                            id
-                            title
-                            description
-                            handle
-                            tags
-                            collections(first: 5) {
-                                edges {
-                                    node { handle title }
-                                }
-                            }
-                            featuredImage { url }
-                            variants(first: 1) {
-                                edges {
-                                    node {
-                                        id
-                                        availableForSale
-                                        price { amount }
-                                        compareAtPrice { amount }
-                                    }
-                                }
+                    featuredImage { url(transform: { maxWidth: 480 }) }
+                    variants(first: 1) {
+                        edges {
+                            node {
+                                id
+                                availableForSale
+                                price { amount }
+                                compareAtPrice { amount }
                             }
                         }
                     }
                 }
             }
-        `);
-        const collections = [{ handle: "all", title: "All categories" }, ...data.collections.edges.map(({ node }) => ({
+        }
+    }
+`;
+
+function applyCatalog(data) {
+    const collections = [{ handle: "all", title: "All categories" }, ...data.collections.edges.map(({ node }) => ({
+        handle: node.handle,
+        title: node.title
+    }))];
+    const products = data.products.edges.map(({ node }) => {
+        const variant = node.variants.edges[0].node;
+        const price = Number(variant.price.amount);
+        const compareAtPrice = variant.compareAtPrice?.amount
+            ? Number(variant.compareAtPrice.amount)
+            : null;
+        return {
+            id: node.id,
             handle: node.handle,
-            title: node.title
-        }))];
-        const products = data.products.edges.map(({ node }) => {
-            const variant = node.variants.edges[0].node;
-            const price = Number(variant.price.amount);
-            const compareAtPrice = variant.compareAtPrice?.amount
-                ? Number(variant.compareAtPrice.amount)
-                : null;
-            return {
-                id: node.id,
-                handle: node.handle,
-                title: node.title,
-                description: node.description,
-                image: node.featuredImage
-                    ? node.featuredImage.url
-                    : "placeholder.png",
-                price,
-                compareAtPrice,
-                hasDiscount: compareAtPrice && compareAtPrice > price,
-                variantId: variant.id,
-                available: variant.availableForSale,
-                tags: node.tags || [],
-                categories: node.collections.edges.map(c => c.node.handle),
-                categoryName: node.collections.edges[0]?.node.title || "All categories"
-            };
-        });
-        COLLECTIONS = collections;
-        PRODUCTS = products;
-        window.shopifyProducts = products;
-        filters.category = getQueryParam("category") || "all";
-        populateShopDropdown();
-        if (grid) renderProducts(getFilteredProducts());
-        // Populate homepage sections if present
-        renderHomeCategories();
-        renderHomeBestSellers();
-        renderHeroCards();
-        window.dispatchEvent(new CustomEvent("shopify:products-loaded", {
-            detail: { products }
-        }));
+            title: node.title,
+            description: node.description,
+            image: node.featuredImage
+                ? node.featuredImage.url
+                : "placeholder.png",
+            price,
+            compareAtPrice,
+            hasDiscount: compareAtPrice && compareAtPrice > price,
+            variantId: variant.id,
+            available: variant.availableForSale,
+            tags: node.tags || [],
+            categories: node.collections.edges.map(c => c.node.handle),
+            categoryName: node.collections.edges[0]?.node.title || "All categories"
+        };
+    });
+    COLLECTIONS = collections;
+    PRODUCTS = products;
+    window.shopifyProducts = products;
+    filters.category = getQueryParam("category") || "all";
+    populateShopDropdown();
+    if (grid) renderProducts(getFilteredProducts());
+    // Populate homepage sections if present
+    renderHomeCategories();
+    renderHomeBestSellers();
+    renderHeroCards();
+    window.dispatchEvent(new CustomEvent("shopify:products-loaded", {
+        detail: { products }
+    }));
+}
+
+function readCatalogCache() {
+    try {
+        return JSON.parse(localStorage.getItem(CATALOG_CACHE_KEY) || "null");
+    } catch {
+        return null;
+    }
+}
+
+// Render the cached catalog instantly, then refresh from Shopify in the background.
+async function initShopData() {
+    const cached = readCatalogCache();
+    const cachedJson = cached ? JSON.stringify(cached) : "";
+    if (cached) {
+        try {
+            applyCatalog(cached);
+        } catch (error) {
+            console.warn("Ignoring unusable catalog cache:", error);
+            localStorage.removeItem(CATALOG_CACHE_KEY);
+        }
+    }
+    try {
+        const data = await shopifyRequest(CATALOG_QUERY);
+        const freshJson = JSON.stringify(data);
+        if (freshJson === cachedJson) return;
+        try {
+            localStorage.setItem(CATALOG_CACHE_KEY, freshJson);
+        } catch {
+            // Storage full or unavailable; the site still works without the cache.
+        }
+        applyCatalog(data);
     } catch (error) {
         console.error("Shopify error:", error);
+        if (PRODUCTS.length) return;
         window.dispatchEvent(new CustomEvent("shopify:products-error"));
         if (grid) {
             grid.innerHTML = `
@@ -321,7 +354,6 @@ async function initShopData() {
         }
     }
 }
-
 function renderHomeCategories() {
     const container = document.getElementById('home-categories');
     if (!container || !COLLECTIONS.length) return;
@@ -408,7 +440,7 @@ function renderHomeBestSellers() {
                     <img
                         src="${product.image}"
                         alt="${product.title}"
-                        class="product-image">
+                        class="product-image" loading="lazy" decoding="async">
                 </a>
               ${discountBadge}
             </div>
@@ -453,7 +485,7 @@ function productCardMarkup(product, bodyPadding = "p-5") {
                     <img
                         src="${product.image}"
                         alt="${escapeHtml(product.title)}"
-                        class="product-image">
+                        class="product-image" loading="lazy" decoding="async">
                 </a>
               ${discountBadge}
             </div>
