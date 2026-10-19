@@ -3,24 +3,12 @@
  * PRODUCT PAGE — SHOPIFY VERSION
  * ============================================================
  *
- * IMPORTANT:
- * Product pages should be opened like:
- *
+ * Product pages should be opened with a Shopify handle:
  * product.html?handle=product-handle
  *
- * Example:
- * product.html?handle=golden-unicorn-pet
- *
- * This file loads the product directly from Shopify.
+ * This file loads the product through the same-origin server proxy.
  * ============================================================
  */
-
-const PRODUCT_SHOP_DOMAIN = "3zyhp0-pm.myshopify.com";
-const PRODUCT_STOREFRONT_TOKEN =
-    "dd4ff066d0d6fdfe138f9d99a4b9b57b";
-
-const PRODUCT_API_URL =
-    `https://${PRODUCT_SHOP_DOMAIN}/api/2025-01/graphql.json`;
 
 let CURRENT_PRODUCT = null;
 let PRODUCT_IMAGES = [];
@@ -34,13 +22,9 @@ let PRODUCT_CART_ID = localStorage.getItem("shopify_cart") || null;
 
 async function shopifyProductRequest(query, variables = {}) {
 
-    const response = await fetch(PRODUCT_API_URL, {
+    const response = await fetch("/api/shopify", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-Shopify-Storefront-Access-Token":
-                PRODUCT_STOREFRONT_TOKEN
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             query,
             variables

@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
 
@@ -5,10 +6,41 @@ const app = express();
 const port = Number(process.env.PORT) || 3000;
 const ollamaUrl = (process.env.OLLAMA_URL || "http://localhost:11434").replace(/\/$/, "");
 const ollamaModel = process.env.OLLAMA_MODEL || "llama3.2";
+const shopifyDomain = (process.env.SHOPIFY_STORE_DOMAIN || "").trim()
+    .replace(/^https?:\/\//i, "")
+    .replace(/\/+$/, "");
+const shopifyToken = (process.env.SHOPIFY_STOREFRONT_TOKEN || "").trim();
 
 app.use(cors());
 app.use(express.json({ limit: "1mb" }));
 app.use(express.static("public"));
+
+app.post("/api/shopify", async (req, res) => {
+    const query = req.body?.query;
+    const variables = req.body?.variables ?? {};
+    if (typeof query !== "string" || !query.trim() || query.length > 50000 || typeof variables !== "object" || Array.isArray(variables)) {
+        return res.status(400).json({ errors: [{ message: "Invalid Shopify request." }] });
+    }
+    if (!/^[a-z0-9][a-z0-9-]*\.myshopify\.com$/i.test(shopifyDomain) || !shopifyToken) {
+        return res.status(503).json({ errors: [{ message: "Shopify server credentials are not configured." }] });
+    }
+
+    try {
+        const shopResponse = await fetch(`https://${shopifyDomain}/api/2025-01/graphql.json`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Shopify-Storefront-Access-Token": shopifyToken
+            },
+            body: JSON.stringify({ query, variables })
+        });
+        const payload = await shopResponse.json();
+        return res.status(shopResponse.status).json(payload);
+    } catch (error) {
+        console.error("Shopify proxy request failed:", error.message);
+        return res.status(502).json({ errors: [{ message: "Could not reach the Shopify Storefront API." }] });
+    }
+});
 
 app.post("/chat", async (req, res) => {
     const message = req.body?.message;

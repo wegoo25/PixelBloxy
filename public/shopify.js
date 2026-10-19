@@ -1,8 +1,3 @@
-const SHOP_DOMAIN =
-"3zyhp0-pm.myshopify.com";
-
-const STOREFRONT_TOKEN =
-"dd4ff066d0d6fdfe138f9d99a4b9b57b";
 const SITE_CURRENCY = "USD";
 const WISHLIST_STORAGE_KEY = "pixelbloxy_wishlist";
 
@@ -70,13 +65,10 @@ window.addEventListener("wishlist:updated", () => {
 
 async function shopifyRequest(query, variables = {}) {
     const response = await fetch(
-        `https://${SHOP_DOMAIN}/api/2025-01/graphql.json`,
+        "/api/shopify",
         {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-Shopify-Storefront-Access-Token": STOREFRONT_TOKEN
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ query, variables })
         }
     );
@@ -233,76 +225,47 @@ async function loadProducts() {
 // Fetch collections and products site-wide so dropdown can be populated on every page
 async function initShopData() {
     try {
-        const response = await fetch(
-            `https://${SHOP_DOMAIN}/api/2025-01/graphql.json`,
+        const data = await shopifyRequest(`
             {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-Shopify-Storefront-Access-Token": STOREFRONT_TOKEN
-                },
-                body: JSON.stringify({
-                    query: `
-                    {
-                    collections(first:50){
-                        edges{
-                        node{
-                            id
-                            title
-                            handle
-                        }
-                        }
+                collections(first: 50) {
+                    edges {
+                        node { id title handle }
                     }
-                    products(first:100){
-                        edges{
-                        node{
+                }
+                products(first: 100) {
+                    edges {
+                        node {
                             id
                             title
                             description
                             handle
                             tags
-
-                            collections(first:5){
-                              edges{
-                                node{
-                                  handle
-                                  title
-                                }
-                              }
-                            }
-
-                            featuredImage{
-                            url
-                            }
-
-                            variants(first:1){
-                            edges{
-                                node{
-                                id
-                                availableForSale
-                                price{
-                                    amount
-                                }
-                                compareAtPrice{
-                                    amount
-                                }
+                            collections(first: 5) {
+                                edges {
+                                    node { handle title }
                                 }
                             }
+                            featuredImage { url }
+                            variants(first: 1) {
+                                edges {
+                                    node {
+                                        id
+                                        availableForSale
+                                        price { amount }
+                                        compareAtPrice { amount }
+                                    }
+                                }
                             }
                         }
-                        }
                     }
-                    }
-                    `
-                })
+                }
             }
-        );
-        const json = await response.json();
-        const collections = [{ handle: "all", title: "All categories" }, ...json.data.collections.edges.map(({ node }) => ({
+        `);
+        const collections = [{ handle: "all", title: "All categories" }, ...data.collections.edges.map(({ node }) => ({
             handle: node.handle,
             title: node.title
         }))];
-        const products = json.data.products.edges.map(({ node }) => {
+        const products = data.products.edges.map(({ node }) => {
             const variant = node.variants.edges[0].node;
             const price = Number(variant.price.amount);
             const compareAtPrice = variant.compareAtPrice?.amount
