@@ -483,7 +483,7 @@ function productCardMarkup(product, bodyPadding = "p-5") {
     `;
 }
 
-const GRID_CLASSES = "grid grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-3";
+const GRID_CLASSES = "grid grid-cols-2 md:grid-cols-5 xl:grid-cols-6 gap-3";
 
 const BEST_SELLERS_RE = /best\s*-?\s*sellers?/i;
 
@@ -556,6 +556,21 @@ function renderProducts(products) {
     } else {
         grid.className = GRID_CLASSES;
         grid.innerHTML = products.map(product => productCardMarkup(product, "p-3")).join("");
+    }
+    if (!grid.dataset.rowHoverBound) {
+        grid.dataset.rowHoverBound = "1";
+        grid.addEventListener("mousemove", event => {
+            const row = event.target.closest(".shop-row");
+            grid.querySelectorAll(".shop-row[data-near]").forEach(r => { if (r !== row) delete r.dataset.near; });
+            if (!row) return;
+            const rect = row.getBoundingClientRect();
+            const zone = Math.min(140, rect.width * 0.2);
+            const x = event.clientX - rect.left;
+            if (x < zone) row.dataset.near = "left";
+            else if (x > rect.width - zone) row.dataset.near = "right";
+            else delete row.dataset.near;
+        });
+        grid.addEventListener("mouseleave", () => grid.querySelectorAll(".shop-row[data-near]").forEach(r => delete r.dataset.near));
     }
     if (!grid.dataset.rowArrowsBound) {
         grid.dataset.rowArrowsBound = "1";
