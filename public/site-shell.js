@@ -1,5 +1,7 @@
 (() => {
     const page = window.location.pathname.split("/").pop() || "index.html";
+    const apiOrigin = String(window.PIXELBLOXY_API_URL || "").trim().replace(/\/+$/, "");
+    window.pixelBloxyApiUrl = path => `${apiOrigin}${path.startsWith("/") ? path : `/${path}`}`;
     const activeClass = name => page === `${name}.html` ? " active" : "";
     const contactChat = page === "contact.html";
 

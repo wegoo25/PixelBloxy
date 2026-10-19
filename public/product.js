@@ -21,32 +21,10 @@ let PRODUCT_CART_ID = localStorage.getItem("shopify_cart") || null;
    ============================================================ */
 
 async function shopifyProductRequest(query, variables = {}) {
-
-    const response = await fetch("/api/shopify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            query,
-            variables
-        })
-    });
-
-    if (!response.ok) {
-        throw new Error(
-            `Shopify request failed: ${response.status}`
-        );
+    if (typeof window.shopifyRequest !== "function") {
+        throw new Error("Shopify client is unavailable.");
     }
-
-    const json = await response.json();
-
-    if (json.errors) {
-        console.error("Shopify GraphQL errors:", json.errors);
-        throw new Error(
-            json.errors.map(error => error.message).join(", ")
-        );
-    }
-
-    return json.data;
+    return window.shopifyRequest(query, variables);
 }
 
 

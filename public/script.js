@@ -342,7 +342,7 @@ async function sendMessage() {
                 available: product.available
             }))
             : [];
-        const response = await fetch("/chat", {
+        const response = await fetch(window.pixelBloxyApiUrl("/chat"), {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

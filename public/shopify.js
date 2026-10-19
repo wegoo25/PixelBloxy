@@ -1,3 +1,5 @@
+const SHOP_DOMAIN = "3zyhp0-pm.myshopify.com";
+const STOREFRONT_TOKEN = "dd4ff066d0d6fdfe138f9d99a4b9b57b";
 const SITE_CURRENCY = "USD";
 const WISHLIST_STORAGE_KEY = "pixelbloxy_wishlist";
 
@@ -65,10 +67,13 @@ window.addEventListener("wishlist:updated", () => {
 
 async function shopifyRequest(query, variables = {}) {
     const response = await fetch(
-        "/api/shopify",
+        `https://${SHOP_DOMAIN}/api/2025-01/graphql.json`,
         {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "X-Shopify-Storefront-Access-Token": STOREFRONT_TOKEN
+            },
             body: JSON.stringify({ query, variables })
         }
     );
@@ -87,6 +92,8 @@ async function shopifyRequest(query, variables = {}) {
 
     return payload.data;
 }
+
+window.shopifyRequest = shopifyRequest;
 
 function throwOnCartUserErrors(result) {
     if (!result) {

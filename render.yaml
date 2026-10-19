@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: pixelbloxy-api
+    runtime: node
+    plan: free
+    branch: beta
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: CORS_ORIGINS
+        value: https://wegoo25.github.io
+      - key: OLLAMA_URL
+        sync: false
+      - key: OLLAMA_MODEL
+        value: llama3.2
